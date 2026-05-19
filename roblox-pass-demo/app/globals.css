@@ -1,0 +1,42 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html,
+body {
+  background: #0a0a0c;
+  color: #ffffff;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* Hide scrollbars on horizontal carousels but keep scroll behavior */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Phone surface - subtle ambient noise to avoid a flat dark fill */
+.phone-surface {
+  background:
+    radial-gradient(140% 60% at 50% -10%, rgba(45, 91, 255, 0.07) 0%, transparent 60%),
+    radial-gradient(120% 60% at 50% 110%, rgba(142, 91, 255, 0.05) 0%, transparent 60%),
+    #000000;
+}
+
+/* Shimmer used by reward thumbnails */
+.tile-shimmer {
+  background:
+    linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(255, 255, 255, 0.06) 50%,
+      transparent 100%
+    ),
+    var(--tile-base, linear-gradient(135deg, #2a2a33, #17171c));
+  background-size: 200% 100%, 100% 100%;
+}
