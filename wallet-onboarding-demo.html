@@ -1,0 +1,1155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Creator Wallet Onboarding – Demo</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: #1c1c1e;
+  font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px 20px 60px;
+  gap: 12px;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ─── DEMO CONTROL BAR ─────────────────────────────────────────────── */
+.demo-bar {
+  width: 100%;
+  max-width: 980px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 9px 14px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.09);
+  border-radius: 8px;
+  flex-wrap: wrap;
+}
+.demo-label {
+  font-size: 11px;
+  font-weight: 500;
+  color: rgba(255,255,255,0.28);
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.toggle-row { display: flex; align-items: center; gap: 9px; }
+.toggle-text {
+  font-size: 13px;
+  color: rgba(255,255,255,0.35);
+  transition: color .15s;
+  white-space: nowrap;
+}
+.toggle-text.on { color: rgba(255,255,255,0.9); font-weight: 500; }
+.toggle-wrap {
+  position: relative; width: 38px; height: 22px; cursor: pointer; flex-shrink: 0;
+}
+.toggle-wrap input { opacity: 0; width: 0; height: 0; position: absolute; }
+.toggle-track {
+  position: absolute; inset: 0; border-radius: 11px;
+  background: rgba(255,255,255,0.14); transition: background .2s;
+}
+.toggle-wrap input:checked + .toggle-track { background: #4080ff; }
+.toggle-thumb {
+  position: absolute; top: 3px; left: 3px; width: 16px; height: 16px;
+  border-radius: 50%; background: #fff; transition: transform .2s; pointer-events: none;
+}
+.toggle-wrap input:checked ~ .toggle-thumb { transform: translateX(16px); }
+.vr { width: 1px; height: 16px; background: rgba(255,255,255,0.1); flex-shrink: 0; }
+.pill-group { display: flex; gap: 4px; flex-wrap: wrap; }
+.dpill {
+  padding: 4px 10px; border-radius: 20px; font-size: 12px;
+  border: 1px solid rgba(255,255,255,0.1); color: rgba(255,255,255,0.4);
+  background: transparent; cursor: pointer; white-space: nowrap; transition: all .15s;
+}
+.dpill:hover { border-color: rgba(255,255,255,0.22); color: rgba(255,255,255,0.75); }
+.dpill.active { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.24); color: #fff; }
+
+/* ─── APP WINDOW ─────────────────────────────────────────────────────── */
+.app-window {
+  width: 100%; max-width: 980px;
+  border-radius: 11px; overflow: hidden;
+  border: 1px solid rgba(255,255,255,0.1);
+  position: relative;
+}
+.window-chrome {
+  height: 36px; background: #1a1a1a;
+  border-bottom: 1px solid rgba(255,255,255,0.07);
+  display: flex; align-items: center; padding: 0 12px;
+}
+.traffic-lights { display: flex; gap: 7px; }
+.tl { width: 12px; height: 12px; border-radius: 50%; }
+.tl-r { background: #ff5f57; }
+.tl-y { background: #ffbd2e; }
+.tl-g { background: #28c840; }
+.window-title {
+  flex: 1; text-align: center; font-size: 12px; color: rgba(255,255,255,0.28);
+}
+
+/* ─── APP LAYOUT ─────────────────────────────────────────────────────── */
+.app-body { display: flex; height: 570px; background: #111111; }
+
+/* Icon rail */
+.icon-rail {
+  width: 46px; background: #0e0e0e;
+  border-right: 1px solid rgba(255,255,255,0.06);
+  display: flex; flex-direction: column; align-items: center;
+  padding: 12px 0 10px; gap: 2px; flex-shrink: 0;
+}
+.ir-icon {
+  width: 34px; height: 34px; border-radius: 7px;
+  display: flex; align-items: center; justify-content: center;
+  color: rgba(255,255,255,0.3); cursor: default; flex-shrink: 0;
+}
+.ir-icon.active { background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.85); }
+.ir-spacer { flex: 1; }
+.ir-div { width: 22px; height: 1px; background: rgba(255,255,255,0.08); margin: 4px 0; }
+
+/* Sidebar */
+.sidebar { width: 188px; border-right: 1px solid rgba(255,255,255,0.06); padding: 16px 0; flex-shrink: 0; }
+.sb-head { padding: 0 14px 10px; font-size: 14px; font-weight: 600; color: #fff; }
+.sb-item {
+  padding: 7px 14px; font-size: 13.5px; color: rgba(255,255,255,0.48);
+  cursor: default; border-radius: 6px; margin: 0 6px; transition: background .1s;
+}
+.sb-item.active { background: rgba(255,255,255,0.09); color: #fff; font-weight: 500; }
+.sb-div { height: 1px; background: rgba(255,255,255,0.06); margin: 8px 0; }
+
+/* Content area */
+.content-area { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+.topbar {
+  height: 46px; border-bottom: 1px solid rgba(255,255,255,0.06);
+  display: flex; align-items: center; padding: 0 22px; gap: 10px; flex-shrink: 0;
+}
+.topbar-icon { color: rgba(255,255,255,0.35); cursor: default; line-height: 0; }
+.topbar-title { font-size: 16px; font-weight: 600; color: #fff; }
+.topbar-sp { flex: 1; }
+.topbar-actions { display: flex; align-items: center; gap: 14px; color: rgba(255,255,255,0.45); }
+.notif-dot { position: relative; line-height: 0; }
+.notif-badge {
+  position: absolute; top: -3px; right: -3px;
+  width: 8px; height: 8px; background: #4080ff;
+  border-radius: 50%; border: 1.5px solid #111111;
+}
+.avatar {
+  width: 28px; height: 28px; border-radius: 50%;
+  background: #2d2d5e; border: 1.5px solid rgba(255,255,255,0.15);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 600; color: rgba(255,255,255,0.8);
+}
+
+/* ─── SCREENS ────────────────────────────────────────────────────────── */
+.screen { display: none; flex: 1; flex-direction: column; }
+.screen.visible { display: flex; }
+
+/* Confirmation screen */
+.confirm-body-wrap {
+  flex: 1; display: flex; flex-direction: column; align-items: center;
+  justify-content: center; padding: 40px 48px; text-align: center;
+}
+.confirm-icon { margin-bottom: 22px; }
+.confirm-heading {
+  font-size: 20px; font-weight: 700; color: #fff;
+  max-width: 430px; line-height: 1.35; margin-bottom: 10px;
+}
+.confirm-sub {
+  font-size: 13.5px; color: rgba(255,255,255,0.5);
+  max-width: 380px; line-height: 1.65; margin-bottom: 28px;
+}
+.btn-blue {
+  padding: 9px 32px; background: #4080ff; color: #fff;
+  border: none; border-radius: 6px; font-size: 14px; font-weight: 500;
+  cursor: pointer; transition: background .15s; min-width: 150px;
+}
+.btn-blue:hover { background: #306ef0; }
+
+/* Setup steps screen */
+.setup-screen-inner { padding: 26px 28px; overflow-y: auto; flex: 1; }
+.back-btn {
+  display: inline-flex; align-items: center; gap: 5px;
+  background: none; border: none; color: rgba(255,255,255,0.32);
+  font-size: 13px; cursor: pointer; padding: 0; margin-bottom: 22px; transition: color .15s;
+}
+.back-btn:hover { color: rgba(255,255,255,0.6); }
+.setup-title { font-size: 19px; font-weight: 700; color: #fff; margin-bottom: 4px; }
+.setup-subtitle { font-size: 13px; color: rgba(255,255,255,0.45); margin-bottom: 22px; }
+.steps-list { display: flex; flex-direction: column; gap: 10px; }
+
+/* Step card */
+.step-card {
+  display: flex; align-items: flex-start; gap: 14px;
+  padding: 16px 18px; border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 9px; background: #1a1a1a;
+  transition: border-color .2s;
+}
+.step-card.done { opacity: .6; }
+.step-num {
+  width: 28px; height: 28px; border-radius: 50%;
+  border: 1.5px solid rgba(255,255,255,0.2);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 600; color: rgba(255,255,255,0.35); flex-shrink: 0;
+}
+.step-num.done-num {
+  border-color: #22c55e; background: rgba(34,197,94,.12); color: #22c55e;
+}
+.step-body { flex: 1; min-width: 0; }
+.step-name { font-size: 14px; font-weight: 500; color: #fff; margin-bottom: 3px; }
+.step-card.done .step-name { text-decoration: line-through; color: rgba(255,255,255,0.4); }
+.step-desc { font-size: 12px; color: rgba(255,255,255,0.38); line-height: 1.55; }
+.step-req-badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-size: 11px; font-weight: 500; color: #f59e0b;
+  background: rgba(245,158,11,.1); border: 1px solid rgba(245,158,11,.2);
+  padding: 2px 7px; border-radius: 20px; margin-bottom: 5px;
+}
+.btn-ghost {
+  padding: 6px 14px; background: transparent; color: rgba(255,255,255,0.8);
+  border: 1px solid rgba(255,255,255,0.15); border-radius: 6px;
+  font-size: 13px; cursor: pointer; white-space: nowrap; flex-shrink: 0;
+  transition: border-color .15s, color .15s; margin-top: 2px;
+}
+.btn-ghost:hover { border-color: rgba(255,255,255,0.35); color: #fff; }
+.btn-ghost:disabled { opacity: .35; cursor: not-allowed; }
+
+/* Wallet fully active screen */
+.wallet-active-wrap {
+  flex: 1; display: flex; flex-direction: column; align-items: center;
+  justify-content: center; padding: 40px 48px; text-align: center;
+}
+
+/* Wallet overview screen */
+.overview-screen { padding: 22px 24px; overflow-y: auto; flex: 1; }
+.overview-head { font-size: 22px; font-weight: 700; color: #fff; margin-bottom: 16px; }
+
+/* 2-col balance cards */
+.balance-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
+.bal-card { padding: 20px 20px 18px; border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; background: #1a1a1a; }
+.bal-label { font-size: 12px; color: rgba(255,255,255,0.42); margin-bottom: 8px; }
+.bal-value {
+  font-size: 28px; font-weight: 700; color: #fff;
+  line-height: 1; margin-bottom: 6px;
+  display: flex; align-items: center; gap: 8px;
+}
+.robux-ico {
+  width: 24px; height: 24px; border-radius: 50%;
+  background: rgba(255,255,255,0.12); display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 800; color: rgba(255,255,255,0.75); flex-shrink: 0;
+}
+.bal-pending { font-size: 11.5px; color: rgba(255,255,255,0.32); margin-bottom: 16px; display: flex; align-items: center; gap: 4px; }
+.bal-payout-note { font-size: 11.5px; color: rgba(255,255,255,0.32); margin-bottom: 16px; display: flex; align-items: center; gap: 4px; line-height: 1.45; }
+.bal-btn {
+  width: 100%; padding: 9px 0;
+  border: none; border-radius: 6px; font-size: 14px; font-weight: 500;
+  cursor: pointer; transition: background .15s;
+}
+.bal-btn.blue { background: #4080ff; color: #fff; }
+.bal-btn.blue:hover { background: #306ef0; }
+.bal-btn.dark { background: rgba(255,255,255,0.09); color: rgba(255,255,255,0.7); border: 1px solid rgba(255,255,255,0.08); }
+.bal-btn.dark:hover { background: rgba(255,255,255,0.13); }
+
+/* Analytics section */
+.section-row {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 15px; font-weight: 600; color: #fff; margin-bottom: 12px; cursor: default;
+}
+.section-row svg { color: rgba(255,255,255,0.45); }
+
+/* Stat cards */
+.stat-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 12px; }
+.stat-card { padding: 16px 18px; border: 1px solid rgba(255,255,255,0.07); border-radius: 9px; background: #1a1a1a; }
+.stat-label { font-size: 12px; color: rgba(255,255,255,0.4); margin-bottom: 8px; }
+.stat-value { font-size: 20px; font-weight: 700; color: rgba(255,255,255,0.35); }
+
+/* Chart card */
+.chart-card { border: 1px solid rgba(255,255,255,0.07); border-radius: 9px; background: #1a1a1a; margin-bottom: 20px; padding: 16px 18px; }
+.chart-card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+.chart-card-title { font-size: 13px; font-weight: 500; color: rgba(255,255,255,0.7); }
+.chart-dots { color: rgba(255,255,255,0.3); font-size: 16px; letter-spacing: 1px; cursor: default; }
+.chart-empty-wrap { padding: 24px 0 8px; display: flex; flex-direction: column; align-items: center; gap: 10px; }
+.chart-legend { display: flex; gap: 16px; margin-top: 8px; }
+.legend-item { display: flex; align-items: center; gap: 5px; font-size: 11px; color: rgba(255,255,255,0.35); }
+.legend-dot { width: 9px; height: 9px; border-radius: 2px; flex-shrink: 0; }
+
+/* Recent transactions */
+.empty-card { border: 1px solid rgba(255,255,255,0.07); border-radius: 9px; background: #1a1a1a; margin-bottom: 22px; }
+.empty-inner { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 30px 20px; gap: 10px; }
+.empty-cap { font-size: 13px; color: rgba(255,255,255,0.32); text-align: center; max-width: 340px; line-height: 1.5; }
+
+
+/* ═══════════════════════════════════════════════════════════════════
+   MODAL OVERLAY
+═══════════════════════════════════════════════════════════════════ */
+.modal-backdrop {
+  position: absolute; inset: 0;
+  background: rgba(0,0,0,0.65);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 100;
+  opacity: 0; pointer-events: none;
+  transition: opacity .2s;
+}
+.modal-backdrop.open { opacity: 1; pointer-events: all; }
+
+
+/* ─── 2FA MODAL (light, matches Roblox settings) ─────────────────── */
+.modal-2fa-box {
+  background: #fff; border-radius: 12px;
+  width: 560px; max-height: 500px;
+  display: flex; flex-direction: column;
+  overflow: hidden;
+  transform: translateY(8px); transition: transform .2s;
+}
+.modal-backdrop.open .modal-2fa-box { transform: translateY(0); }
+
+.modal-header {
+  padding: 18px 22px 0;
+  display: flex; align-items: flex-start; justify-content: space-between;
+}
+.modal-title { font-size: 17px; font-weight: 700; color: #111; }
+.modal-close-btn {
+  width: 28px; height: 28px; border-radius: 50%;
+  background: #f0f0f0; border: none; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  color: #555; font-size: 14px; flex-shrink: 0; margin-top: -2px;
+  transition: background .15s;
+}
+.modal-close-btn:hover { background: #e0e0e0; }
+
+.modal-body { padding: 14px 22px 20px; overflow-y: auto; flex: 1; }
+
+/* Required callout for high-robux */
+.required-callout {
+  display: flex; gap: 10px; align-items: flex-start;
+  background: #fff8ec; border: 1px solid #f0c060;
+  border-radius: 8px; padding: 12px 14px; margin-bottom: 16px;
+}
+.required-callout-icon { color: #d97706; margin-top: 1px; flex-shrink: 0; }
+.required-callout-text { font-size: 13px; color: #7a4a00; line-height: 1.5; }
+.required-callout-text strong { color: #5a3500; }
+
+/* Enhanced protection toggle card */
+.ep-card {
+  border: 1px solid #e5e7eb; border-radius: 9px;
+  padding: 14px 16px 14px 16px;
+  display: flex; align-items: flex-start; justify-content: space-between;
+  gap: 12px; cursor: pointer; transition: border-color .15s;
+  margin-bottom: 12px;
+}
+.ep-card:hover { border-color: #aaa; }
+.ep-card.selected { border-color: #4080ff; border-width: 2px; }
+.ep-card-left {}
+.ep-card-title { font-size: 14px; font-weight: 600; color: #111; margin-bottom: 4px; display: flex; align-items: center; gap: 8px; }
+.ep-status-pill {
+  font-size: 11px; font-weight: 500; padding: 1px 7px;
+  border-radius: 20px; background: #f0f0f0; color: #666;
+}
+.ep-status-pill.on { background: #dcfce7; color: #166534; }
+.ep-card-desc { font-size: 12.5px; color: #555; line-height: 1.5; }
+.ep-chevron { color: #aaa; margin-top: 2px; flex-shrink: 0; }
+
+/* 2-step verification section */
+.twostep-section-label {
+  font-size: 13px; font-weight: 600; color: #222; margin-bottom: 4px; margin-top: 4px;
+}
+.twostep-section-desc { font-size: 12.5px; color: #666; line-height: 1.5; margin-bottom: 14px; }
+
+/* Option cards (radio-style) */
+.option-cards { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
+.opt-card {
+  border: 1px solid #e0e0e0; border-radius: 8px;
+  padding: 13px 14px; display: flex; align-items: flex-start;
+  justify-content: space-between; gap: 12px;
+  cursor: pointer; transition: border-color .15s;
+  user-select: none;
+}
+.opt-card:hover { border-color: #bbb; }
+.opt-card.selected { border-color: #4080ff; border-width: 2px; }
+.opt-card-left { flex: 1; min-width: 0; }
+.opt-title { font-size: 13.5px; font-weight: 600; color: #111; margin-bottom: 3px; }
+.opt-desc { font-size: 12px; color: #666; line-height: 1.45; }
+.radio-circle {
+  width: 18px; height: 18px; border-radius: 50%;
+  border: 2px solid #ccc; flex-shrink: 0; margin-top: 2px;
+  display: flex; align-items: center; justify-content: center;
+  transition: border-color .15s;
+}
+.radio-circle.checked {
+  border-color: #4080ff;
+  background: #4080ff;
+}
+.radio-dot {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: #fff; display: none;
+}
+.radio-circle.checked .radio-dot { display: block; }
+
+.modal-footer {
+  padding: 14px 22px;
+  border-top: 1px solid #f0f0f0;
+  display: flex; align-items: center; justify-content: space-between; gap: 10px;
+}
+.settings-link {
+  font-size: 12.5px; color: #4080ff; text-decoration: none; display: flex; align-items: center; gap: 4px;
+}
+.settings-link:hover { text-decoration: underline; }
+.modal-save-btn {
+  padding: 8px 24px; background: #4080ff; color: #fff;
+  border: none; border-radius: 6px; font-size: 14px; font-weight: 500;
+  cursor: pointer; transition: background .15s; min-width: 100px;
+}
+.modal-save-btn:hover { background: #306ef0; }
+.modal-save-btn:disabled { background: #ccc; cursor: not-allowed; }
+.modal-save-btn.success-state { background: #22c55e; }
+
+
+/* ─── TAXBIT MODAL ───────────────────────────────────────────────── */
+.modal-tax-box {
+  background: #fff; border-radius: 12px;
+  width: 540px; max-height: 530px;
+  display: flex; flex-direction: column;
+  overflow: hidden;
+  transform: translateY(8px); transition: transform .2s;
+}
+.modal-backdrop.open .modal-tax-box { transform: translateY(0); }
+
+.taxbit-header {
+  padding: 16px 22px 0;
+  display: flex; align-items: flex-start; justify-content: space-between;
+}
+.taxbit-brand {
+  display: flex; flex-direction: column; gap: 2px;
+}
+.taxbit-logo {
+  font-size: 15px; font-weight: 800; color: #1a1a2e; letter-spacing: -.02em;
+}
+.taxbit-logo span { color: #4080ff; }
+.taxbit-sub { font-size: 11px; color: #999; font-weight: 400; }
+.taxbit-body { padding: 14px 22px 4px; overflow-y: auto; flex: 1; }
+.tax-form-title { font-size: 15px; font-weight: 700; color: #111; margin-bottom: 4px; }
+.tax-form-sub { font-size: 12.5px; color: #888; margin-bottom: 16px; line-height: 1.4; }
+
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+.form-grid.full { grid-template-columns: 1fr; }
+.form-field { display: flex; flex-direction: column; gap: 5px; }
+.form-label { font-size: 12px; font-weight: 500; color: #444; }
+.form-label .req { color: #e53e3e; margin-left: 2px; }
+.form-input {
+  padding: 8px 11px; border: 1px solid #ddd; border-radius: 6px;
+  font-size: 13.5px; color: #111; font-family: inherit;
+  transition: border-color .15s;
+  -webkit-font-smoothing: antialiased;
+}
+.form-input:focus { outline: none; border-color: #4080ff; }
+.form-input::placeholder { color: #bbb; }
+.form-select {
+  padding: 8px 11px; border: 1px solid #ddd; border-radius: 6px;
+  font-size: 13.5px; color: #111; font-family: inherit;
+  background: #fff; cursor: pointer;
+}
+.form-select:focus { outline: none; border-color: #4080ff; }
+.tax-divider { height: 1px; background: #f0f0f0; margin: 12px 0; }
+
+.cert-row {
+  display: flex; align-items: flex-start; gap: 10px;
+  padding: 12px; background: #f8faff; border: 1px solid #dbeafe;
+  border-radius: 8px; margin-bottom: 4px;
+}
+.cert-checkbox {
+  width: 16px; height: 16px; accent-color: #4080ff; cursor: pointer; margin-top: 1px; flex-shrink: 0;
+}
+.cert-text { font-size: 12px; color: #444; line-height: 1.55; }
+
+.taxbit-footer {
+  padding: 12px 22px 16px;
+  border-top: 1px solid #f0f0f0;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.taxbit-secure { display: flex; align-items: center; gap: 5px; font-size: 11.5px; color: #999; }
+.tax-submit-btn {
+  padding: 9px 28px; background: #4080ff; color: #fff;
+  border: none; border-radius: 6px; font-size: 14px; font-weight: 500;
+  cursor: pointer; transition: background .15s;
+}
+.tax-submit-btn:hover { background: #306ef0; }
+.tax-submit-btn:disabled { background: #ccc; cursor: not-allowed; }
+</style>
+</head>
+<body>
+
+<!-- ── DEMO CONTROL BAR ── -->
+<div class="demo-bar">
+  <span class="demo-label">Preview</span>
+
+  <div class="toggle-row">
+    <span class="toggle-text on" id="lbl-no">No setup needed</span>
+    <label class="toggle-wrap">
+      <input type="checkbox" id="state-toggle" onchange="onStateToggle(this.checked)">
+      <div class="toggle-track"></div>
+      <div class="toggle-thumb"></div>
+    </label>
+    <span class="toggle-text" id="lbl-setup">Setup required</span>
+  </div>
+
+  <div class="vr" id="profile-vr" style="display:none"></div>
+  <div class="pill-group" id="profile-pills" style="display:none">
+    <button class="dpill active" id="pill-low"    onclick="setProfile('low-robux')">Low Robux</button>
+    <button class="dpill"        id="pill-high"   onclick="setProfile('high-robux')">High Robux (100k+)</button>
+    <button class="dpill"        id="pill-2fa"    onclick="setProfile('2fa-done')">2FA already set up</button>
+    <button class="dpill"        id="pill-tax"    onclick="setProfile('tax-done')">Tax already filled out</button>
+  </div>
+</div>
+
+
+<!-- ── APP WINDOW ── -->
+<div class="app-window" id="app-window">
+
+  <div class="window-chrome">
+    <div class="traffic-lights">
+      <div class="tl tl-r"></div><div class="tl tl-y"></div><div class="tl tl-g"></div>
+    </div>
+    <div class="window-title">Creator Hub</div>
+  </div>
+
+  <div class="app-body">
+
+    <!-- Icon rail -->
+    <div class="icon-rail">
+      <div class="ir-icon" style="margin-bottom:6px">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+          <rect x="3" y="3" width="14" height="14" rx="2" stroke="currentColor" stroke-width="1.5" fill="none"/>
+          <rect x="7" y="7" width="6" height="6" rx="1" fill="currentColor" opacity=".6"/>
+        </svg>
+      </div>
+      <div class="ir-icon"><svg width="17" height="17" viewBox="0 0 17 17" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="8.5" cy="6.5" r="2.5"/><path d="M3 15c0-3 2.5-5 5.5-5s5.5 2 5.5 5" stroke-linecap="round"/></svg></div>
+      <div class="ir-icon"><svg width="17" height="17" viewBox="0 0 17 17" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M2 6.5L8.5 2l6.5 4.5V15a1 1 0 01-1 1H3a1 1 0 01-1-1V6.5z" stroke-linejoin="round"/></svg></div>
+      <div class="ir-icon"><svg width="17" height="17" viewBox="0 0 17 17" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M2 3.5h13M2 7.5h9M2 11.5h11M2 15.5h7" stroke-linecap="round"/></svg></div>
+      <div class="ir-icon"><svg width="17" height="17" viewBox="0 0 17 17" fill="none" stroke="currentColor" stroke-width="1.4"><circle cx="7" cy="6.5" r="2.5"/><circle cx="12" cy="6" r="2"/><path d="M1.5 14.5c0-2.5 2.5-4 5.5-4s5.5 1.5 5.5 4" stroke-linecap="round"/></svg></div>
+      <div class="ir-icon"><svg width="17" height="17" viewBox="0 0 17 17" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M2.5 3h12a1 1 0 011 1v6a1 1 0 01-1 1h-12a1 1 0 01-1-1V4a1 1 0 011-1z"/><path d="M5.5 14h6M8.5 11v3" stroke-linecap="round"/></svg></div>
+      <div class="ir-icon active"><svg width="17" height="17" viewBox="0 0 17 17" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="2" y="3" width="13" height="9" rx="1.5"/><path d="M5.5 15h6M8.5 12v3" stroke-linecap="round"/></svg></div>
+      <div class="ir-icon"><svg width="17" height="17" viewBox="0 0 17 17" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M2 12l4-5 3 3 3-5 3 4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="ir-icon"><svg width="17" height="17" viewBox="0 0 17 17" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M14 7c0 3.5-5.5 8-5.5 8S3 10.5 3 7a5.5 5.5 0 0111 0z"/><circle cx="8.5" cy="7" r="2" fill="currentColor" opacity=".5"/></svg></div>
+      <div class="ir-spacer"></div>
+      <div class="ir-div"></div>
+      <div class="ir-icon"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 1L15 8 8 15 1 8 8 1z" fill="currentColor" opacity=".55"/></svg></div>
+      <div class="ir-icon"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M8 1v9M5 4L8 1l3 3" stroke-linecap="round" stroke-linejoin="round"/><path d="M2 12h12v3H2z" rx="1"/></svg></div>
+      <div class="ir-icon"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="1" y="3" width="5" height="10" rx="1"/><rect x="8" y="3" width="7" height="4" rx="1"/><rect x="8" y="9" width="7" height="4" rx="1"/></svg></div>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <div class="sb-head">Finances</div>
+      <div class="sb-item" id="sb-overview">Overview</div>
+      <div class="sb-item">Analytics</div>
+      <div class="sb-item">Transactions</div>
+      <div class="sb-item">Tax center</div>
+      <div class="sb-div"></div>
+      <div class="sb-item">Account information</div>
+      <div class="sb-item">Billing</div>
+      <div class="sb-item active" id="sb-robloxcash">[Roblox Cash]</div>
+      <div class="sb-item">Other payments</div>
+    </div>
+
+    <!-- Content area -->
+    <div class="content-area">
+      <div class="topbar">
+        <span class="topbar-icon">
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M2 4.5h14M2 9h10M2 13.5h14" stroke-linecap="round"/>
+            <path d="M13 12l3-3-3-3" stroke-linecap="round" stroke-linejoin="round" opacity=".5"/>
+          </svg>
+        </span>
+        <span class="topbar-title" id="topbar-title">Set up your Roblox Creator Wallet</span>
+        <div class="topbar-sp"></div>
+        <div class="topbar-actions">
+          <svg width="17" height="17" viewBox="0 0 17 17" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="7.5" cy="7.5" r="5"/><path d="M11.5 11.5l3.5 3.5" stroke-linecap="round"/></svg>
+          <div class="notif-dot">
+            <svg width="17" height="17" viewBox="0 0 17 17" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M8.5 2a5.5 5.5 0 015.5 5.5v2L16 13H1l2-3.5V7.5A5.5 5.5 0 018.5 2zM6.5 14.5a2 2 0 004 0" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <div class="notif-badge"></div>
+          </div>
+          <div class="avatar">Z</div>
+        </div>
+      </div>
+
+      <!-- SCREEN: no-setup confirmation -->
+      <div class="screen visible" id="screen-no-setup">
+        <div class="confirm-body-wrap">
+          <div class="confirm-icon">
+            <svg width="68" height="68" viewBox="0 0 68 68" fill="none">
+              <circle cx="34" cy="34" r="32" stroke="#fff" stroke-width="1.8"/>
+              <path d="M22 34l10 10 15-20" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div class="confirm-heading">Your earnings are now in USD!</div>
+          <div class="confirm-sub">Access your money and see analytics from your wallet at any time.</div>
+          <button class="btn-blue" onclick="goTo('overview')">View wallet</button>
+        </div>
+      </div>
+
+      <!-- SCREEN: setup confirmation -->
+      <div class="screen" id="screen-confirm-setup">
+        <div class="confirm-body-wrap">
+          <div class="confirm-icon">
+            <svg width="68" height="68" viewBox="0 0 68 68" fill="none">
+              <circle cx="34" cy="34" r="32" stroke="#fff" stroke-width="1.8"/>
+              <path d="M22 34l10 10 15-20" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div class="confirm-heading">You're almost ready to earn in USD and view analytics in your wallet.</div>
+          <div class="confirm-sub">Complete a few final setup steps to get started.</div>
+          <button class="btn-blue" onclick="goTo('setup-steps')">Complete setup</button>
+        </div>
+      </div>
+
+      <!-- SCREEN: setup steps (dynamically rendered) -->
+      <div class="screen" id="screen-setup-steps">
+        <div class="setup-screen-inner">
+          <button class="back-btn" onclick="goTo('confirm-setup')">
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 2L4 7l5 5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Back
+          </button>
+          <div class="setup-title">Complete your setup</div>
+          <div class="setup-subtitle" id="steps-remaining-text">2 steps remaining to start earning in USD</div>
+          <div class="steps-list" id="steps-list"></div>
+        </div>
+      </div>
+
+      <!-- SCREEN: wallet fully active -->
+      <div class="screen" id="screen-wallet-active">
+        <div class="wallet-active-wrap">
+          <div style="margin-bottom:22px">
+            <svg width="72" height="72" viewBox="0 0 72 72" fill="none">
+              <circle cx="36" cy="36" r="34" stroke="#22c55e" stroke-width="2"/>
+              <path d="M23 36l10.5 10.5 16.5-21" stroke="#22c55e" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div class="confirm-heading" style="color:#fff">Your wallet is fully active!</div>
+          <div class="confirm-sub">You're now earning in USD. Your balance and analytics are ready to access from your wallet.</div>
+          <button class="btn-blue" onclick="goTo('overview')">View wallet</button>
+        </div>
+      </div>
+
+      <!-- SCREEN: wallet overview -->
+      <div class="screen" id="screen-overview">
+        <div class="overview-screen">
+          <div class="overview-head">Overview</div>
+
+          <!-- Balance cards -->
+          <div class="balance-grid">
+            <div class="bal-card">
+              <div class="bal-label">Available balance</div>
+              <div class="bal-value">$0.00</div>
+              <div class="bal-payout-note">
+                <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.3" style="flex-shrink:0"><circle cx="6.5" cy="6.5" r="5.5"/><path d="M6.5 5.5v3M6.5 4v.5" stroke-linecap="round"/></svg>
+                USD earnings will appear here.
+              </div>
+              <button class="bal-btn blue">Transfer</button>
+            </div>
+            <div class="bal-card">
+              <div class="bal-label">Robux balance</div>
+              <div class="bal-value">
+                <div class="robux-ico">R</div>52,345
+              </div>
+              <div style="margin-bottom:16px"></div>
+              <button class="bal-btn dark">Buy Robux</button>
+            </div>
+          </div>
+
+          <!-- Analytics -->
+          <div class="section-row">
+            Analytics in last 7 days
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 2l5 5-5 5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+
+          <!-- Stat cards -->
+          <div class="stat-grid">
+            <div class="stat-card">
+              <div class="stat-label">Total incoming</div>
+              <div class="stat-value">$0.00</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">Total outgoings</div>
+              <div class="stat-value">$0.00</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">Total net income</div>
+              <div class="stat-value">$0.00</div>
+            </div>
+          </div>
+
+          <!-- Chart card -->
+          <div class="chart-card">
+            <div class="chart-card-header">
+              <div class="chart-card-title">Total income &amp; outgoings</div>
+              <div class="chart-dots">···</div>
+            </div>
+            <!-- Ghost chart axes to show the structure, with empty-state message -->
+            <div style="position:relative">
+              <svg width="100%" height="110" viewBox="0 0 560 110" preserveAspectRatio="none" fill="none">
+                <!-- Y gridlines -->
+                <line x1="0" y1="10"  x2="560" y2="10"  stroke="rgba(255,255,255,0.05)" stroke-width="1"/>
+                <line x1="0" y1="35"  x2="560" y2="35"  stroke="rgba(255,255,255,0.05)" stroke-width="1"/>
+                <line x1="0" y1="60"  x2="560" y2="60"  stroke="rgba(255,255,255,0.05)" stroke-width="1"/>
+                <line x1="0" y1="85"  x2="560" y2="85"  stroke="rgba(255,255,255,0.05)" stroke-width="1"/>
+                <line x1="0" y1="108" x2="560" y2="108" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+              </svg>
+              <!-- Y labels -->
+              <div style="position:absolute;top:0;left:0;height:110px;display:flex;flex-direction:column;justify-content:space-between;padding:4px 0 4px">
+                <span style="font-size:10px;color:rgba(255,255,255,0.18)">$500</span>
+                <span style="font-size:10px;color:rgba(255,255,255,0.18)">$250</span>
+                <span style="font-size:10px;color:rgba(255,255,255,0.18)">$0</span>
+              </div>
+              <!-- X labels -->
+              <div style="display:flex;justify-content:space-around;padding:6px 0 0 24px">
+                <span style="font-size:10px;color:rgba(255,255,255,0.2)">Oct 1</span>
+                <span style="font-size:10px;color:rgba(255,255,255,0.2)">Oct 2</span>
+                <span style="font-size:10px;color:rgba(255,255,255,0.2)">Oct 3</span>
+                <span style="font-size:10px;color:rgba(255,255,255,0.2)">Oct 4</span>
+                <span style="font-size:10px;color:rgba(255,255,255,0.2)">Oct 5</span>
+                <span style="font-size:10px;color:rgba(255,255,255,0.2)">Oct 6</span>
+                <span style="font-size:10px;color:rgba(255,255,255,0.2)">Oct 7</span>
+              </div>
+              <!-- Centered empty state overlay -->
+              <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center">
+                <span style="font-size:12px;color:rgba(255,255,255,0.28);background:#1a1a1a;padding:4px 12px;border-radius:20px;">
+                  Charts will populate after your first payout cycle
+                </span>
+              </div>
+            </div>
+            <div class="chart-legend">
+              <div class="legend-item"><div class="legend-dot" style="background:#4080ff"></div>Incoming</div>
+              <div class="legend-item"><div class="legend-dot" style="background:#ef4444"></div>Outgoing</div>
+              <div class="legend-item"><div class="legend-dot" style="background:#f97316"></div>Net income</div>
+            </div>
+          </div>
+
+          <!-- Recent transactions -->
+          <div class="section-row">
+            Recent transactions
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 2l5 5-5 5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="empty-card">
+            <div class="empty-inner">
+              <svg width="36" height="36" viewBox="0 0 36 36" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="1.4"><rect x="3" y="9" width="30" height="18" rx="3"/><path d="M9 18h18M9 23h12" stroke-linecap="round"/></svg>
+              <div class="empty-cap">Your transactions will appear here once you start earning or spending.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div><!-- /content-area -->
+
+
+    <!-- ═══════════ 2FA MODAL ═══════════ -->
+    <div class="modal-backdrop" id="modal-2fa">
+      <div class="modal-2fa-box">
+        <div class="modal-header">
+          <div class="modal-title" id="modal-2fa-title">Set up two-factor authentication</div>
+          <button class="modal-close-btn" onclick="closeModal('modal-2fa')">✕</button>
+        </div>
+        <div class="modal-body" id="modal-2fa-body">
+          <!-- rendered dynamically -->
+        </div>
+        <div class="modal-footer">
+          <a href="#" class="settings-link" onclick="return false">
+            <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M9 2h2a1 1 0 011 1v8a1 1 0 01-1 1H2a1 1 0 01-1-1V7"/><path d="M6 7L12 1M9 1h3v3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Manage in Security Settings
+          </a>
+          <button class="modal-save-btn" id="modal-2fa-save" onclick="save2FA()">Save</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════ TAX FORM MODAL ═══════════ -->
+    <div class="modal-backdrop" id="modal-tax">
+      <div class="modal-tax-box">
+        <div class="taxbit-header">
+          <div class="taxbit-brand">
+            <div class="taxbit-logo">Tax<span>Bit</span></div>
+            <div class="taxbit-sub">Tax information collection powered by TaxBit</div>
+          </div>
+          <button class="modal-close-btn" onclick="closeModal('modal-tax')">✕</button>
+        </div>
+        <div class="taxbit-body">
+          <div class="tax-form-title">US Tax Form (W-9)</div>
+          <div class="tax-form-sub">Required for US creators before earning on the platform. This information is kept secure and used only for tax reporting purposes.</div>
+
+          <div class="form-grid">
+            <div class="form-field">
+              <label class="form-label">First name <span class="req">*</span></label>
+              <input class="form-input" type="text" placeholder="John" id="tax-fname">
+            </div>
+            <div class="form-field">
+              <label class="form-label">Last name <span class="req">*</span></label>
+              <input class="form-input" type="text" placeholder="Doe" id="tax-lname">
+            </div>
+          </div>
+
+          <div class="form-grid full" style="margin-bottom:12px">
+            <div class="form-field">
+              <label class="form-label">Social Security Number (SSN) <span class="req">*</span></label>
+              <input class="form-input" type="text" placeholder="XXX-XX-XXXX" id="tax-ssn" maxlength="11" oninput="formatSSN(this)">
+            </div>
+          </div>
+
+          <div class="form-grid" style="margin-bottom:12px">
+            <div class="form-field">
+              <label class="form-label">Tax classification <span class="req">*</span></label>
+              <select class="form-select form-input" id="tax-class">
+                <option value="">Select...</option>
+                <option>Individual / Sole proprietor</option>
+                <option>Single-member LLC</option>
+                <option>C Corporation</option>
+                <option>S Corporation</option>
+                <option>Partnership</option>
+                <option>Trust / Estate</option>
+              </select>
+            </div>
+            <div class="form-field">
+              <label class="form-label">Country <span class="req">*</span></label>
+              <select class="form-select form-input" id="tax-country">
+                <option>United States</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-grid full" style="margin-bottom:12px">
+            <div class="form-field">
+              <label class="form-label">Street address <span class="req">*</span></label>
+              <input class="form-input" type="text" placeholder="123 Main St" id="tax-addr">
+            </div>
+          </div>
+
+          <div class="form-grid" style="margin-bottom:12px">
+            <div class="form-field">
+              <label class="form-label">City <span class="req">*</span></label>
+              <input class="form-input" type="text" placeholder="San Francisco" id="tax-city">
+            </div>
+            <div class="form-field">
+              <label class="form-label">State / ZIP</label>
+              <input class="form-input" type="text" placeholder="CA 94107" id="tax-state">
+            </div>
+          </div>
+
+          <div class="tax-divider"></div>
+          <div class="cert-row">
+            <input type="checkbox" class="cert-checkbox" id="tax-cert" onchange="updateTaxSubmit()">
+            <label class="cert-text" for="tax-cert">
+              Under penalties of perjury, I certify that the information provided on this form is correct, and that I am a U.S. person (including a U.S. resident alien).
+            </label>
+          </div>
+        </div>
+        <div class="taxbit-footer">
+          <div class="taxbit-secure">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.3"><rect x="1.5" y="5" width="9" height="6" rx="1"/><path d="M4 5V4a2 2 0 014 0v1" stroke-linecap="round"/></svg>
+            256-bit encryption · SOC 2 certified
+          </div>
+          <button class="tax-submit-btn" id="tax-submit-btn" disabled onclick="submitTax()">Submit</button>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /app-body -->
+</div><!-- /app-window -->
+
+
+<script>
+// ── STATE ─────────────────────────────────────────────────────────
+let setupMode    = false;
+let userProfile  = 'low-robux'; // 'low-robux' | 'high-robux' | '2fa-done' | 'tax-done'
+let twoFaDone    = false;
+let taxDone      = false;
+let selected2FA  = null; // option id
+let epEnabled    = false; // enhanced protection toggle
+
+// ── HELPERS ───────────────────────────────────────────────────────
+function needs2FA()        { return setupMode && userProfile !== '2fa-done'; }
+function requiresEnhanced(){ return userProfile === 'high-robux'; }
+function taxAlreadyDone()  { return userProfile === 'tax-done'; }
+
+function stepsRemaining() {
+  let n = 0;
+  if (needs2FA() && !twoFaDone) n++;
+  if (!taxDone) n++;
+  return n;
+}
+
+// ── NAVIGATION ────────────────────────────────────────────────────
+const titles = {
+  'no-setup':      'Set up your Roblox Creator Wallet',
+  'confirm-setup': 'Set up your Roblox Creator Wallet',
+  'setup-steps':   'Complete your setup',
+  'wallet-active': 'Finances',
+  'overview':      'Finances',
+};
+
+function goTo(screen) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('visible'));
+  document.getElementById('screen-' + screen).classList.add('visible');
+
+  document.getElementById('topbar-title').textContent = titles[screen] || '';
+
+  const isWallet = screen === 'overview' || screen === 'wallet-active';
+  document.getElementById('sb-robloxcash').classList.toggle('active', !isWallet);
+  document.getElementById('sb-overview').classList.toggle('active', isWallet);
+
+  if (screen === 'setup-steps') renderSetupSteps();
+}
+
+// ── PROFILE / TOGGLE ──────────────────────────────────────────────
+function onStateToggle(checked) {
+  setupMode = checked;
+  document.getElementById('lbl-no').classList.toggle('on', !checked);
+  document.getElementById('lbl-setup').classList.toggle('on', checked);
+  document.getElementById('profile-vr').style.display    = checked ? 'block' : 'none';
+  document.getElementById('profile-pills').style.display = checked ? 'flex'  : 'none';
+
+  if (checked) {
+    resetProgress();
+    goTo('confirm-setup');
+  } else {
+    goTo('no-setup');
+  }
+}
+
+function setProfile(p) {
+  userProfile = p;
+  twoFaDone   = false;
+  taxDone     = p === 'tax-done'; // pre-filled for this profile
+  selected2FA = null;
+  epEnabled   = false;
+
+  document.querySelectorAll('[id^="pill-"]').forEach(el => el.classList.remove('active'));
+  const map = { 'low-robux': 'pill-low', 'high-robux': 'pill-high', '2fa-done': 'pill-2fa', 'tax-done': 'pill-tax' };
+  document.getElementById(map[p]).classList.add('active');
+
+  goTo('confirm-setup');
+}
+
+function resetProgress() {
+  twoFaDone = false; taxDone = false; selected2FA = null; epEnabled = false;
+}
+
+// ── SETUP STEPS RENDERER ─────────────────────────────────────────
+function renderSetupSteps() {
+  const list = document.getElementById('steps-list');
+  const remaining = stepsRemaining();
+  document.getElementById('steps-remaining-text').textContent =
+    remaining === 0
+      ? 'All steps complete!'
+      : `${remaining} step${remaining !== 1 ? 's' : ''} remaining to start earning in USD`;
+
+  let html = '';
+  let stepNum = 1;
+
+  // 2FA step (if profile needs it)
+  if (needs2FA()) {
+    const isHigh = requiresEnhanced();
+    const done   = twoFaDone;
+    html += stepCardHTML({
+      num:     stepNum++,
+      done,
+      badge:   isHigh ? '⚠ Enhanced protection required' : null,
+      title:   isHigh ? 'Enable enhanced protection' : 'Set up two-factor authentication',
+      desc:    isHigh
+        ? 'Enhanced protection, the strongest form of 2FA, is required to protect your account.'
+        : 'Add an extra layer of security to protect your account and earnings.',
+      action:  'Set up 2FA',
+      onclick: "openModal('modal-2fa')",
+    });
+  }
+
+  // Tax form step — skip entirely if already done (same pattern as 2FA)
+  if (!taxDone) {
+    html += stepCardHTML({
+      num:     stepNum++,
+      done:    false,
+      badge:   null,
+      title:   'Complete your tax form',
+      desc:    'US creators must submit a W-9 before they can earn on the platform.',
+      action:  'Complete tax form',
+      onclick: "openModal('modal-tax')",
+    });
+  }
+
+  list.innerHTML = html;
+}
+
+function stepCardHTML({ num, done, badge, title, desc, action, onclick }) {
+  const numHTML = done
+    ? `<div class="step-num done-num"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 6l3.5 3.5L10 3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>`
+    : `<div class="step-num">${num}</div>`;
+
+  const badgeHTML = badge && !done
+    ? `<div class="step-req-badge"><svg width="11" height="11" viewBox="0 0 11 11" fill="none"><path d="M5.5 1L1 9.5h9L5.5 1z" stroke="#d97706" stroke-width="1.3" stroke-linejoin="round"/><path d="M5.5 5v2M5.5 8.5v.3" stroke="#d97706" stroke-width="1.3" stroke-linecap="round"/></svg>${badge}</div>`
+    : '';
+
+  const btnHTML = done
+    ? ''
+    : `<button class="btn-ghost" onclick="${onclick}">${action}</button>`;
+
+  return `
+    <div class="step-card ${done ? 'done' : ''}">
+      ${numHTML}
+      <div class="step-body">
+        ${badgeHTML}
+        <div class="step-name">${title}</div>
+        <div class="step-desc">${desc}</div>
+      </div>
+      ${btnHTML}
+    </div>`;
+}
+
+// ── MODAL OPEN / CLOSE ────────────────────────────────────────────
+function openModal(id) {
+  if (id === 'modal-2fa') render2FAModal();
+  document.getElementById(id).classList.add('open');
+}
+
+function closeModal(id) {
+  document.getElementById(id).classList.remove('open');
+}
+
+// ── 2FA MODAL ─────────────────────────────────────────────────────
+function render2FAModal() {
+  const isHigh = requiresEnhanced();
+  const body = document.getElementById('modal-2fa-body');
+  const saveBtn = document.getElementById('modal-2fa-save');
+  document.getElementById('modal-2fa-title').textContent = isHigh
+    ? 'Set up two-factor authentication'
+    : 'Set up two-factor authentication';
+  saveBtn.disabled = true;
+  saveBtn.textContent = isHigh ? 'Enable' : 'Save';
+
+  if (isHigh) {
+    body.innerHTML = `
+      <div class="required-callout">
+        <div class="required-callout-icon">
+          <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+            <path d="M9 2L1.5 15.5h15L9 2z" fill="#fef3c7" stroke="#d97706" stroke-width="1.4" stroke-linejoin="round"/>
+            <path d="M9 8v3.5M9 13.5v.5" stroke="#d97706" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div class="required-callout-text">
+          <strong>Enhanced protection is required.</strong> Enhanced protection is the strongest form of 2FA, using anti-phishable methods like passkeys or hardware security keys to keep your account secure.
+        </div>
+      </div>
+
+      <div class="twostep-section-label" style="margin-bottom:10px">Enhanced protection</div>
+
+      <div class="ep-card" id="ep-toggle-card" onclick="toggleEnhanced()">
+        <div class="ep-card-left">
+          <div class="ep-card-title">
+            Enhanced protection
+            <span class="ep-status-pill" id="ep-pill">Off</span>
+          </div>
+          <div class="ep-card-desc">Enhanced protection provides the highest level of security and protects you against targeted attacks. It requires passkeys or hardware security keys to sign in to your account.</div>
+        </div>
+        <div class="ep-chevron">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 4l4 4-4 4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+      </div>`;
+  } else {
+    const opts = [
+      { id: 'email',   title: 'Email (Secure)',                                   desc: 'Receive unique security codes at your specified email.' },
+      { id: 'auth',    title: 'Authenticator App (Very Secure)',                   desc: 'Download an app on your phone to generate unique security codes. Suggested apps include Google Authenticator, Microsoft Authenticator, and Twilio\'s Authy.' },
+      { id: 'hw',      title: 'Hardware Security Keys & Authenticator App (Very Secure)', desc: 'Enable both a hardware security key and the authenticator app for enhanced account security. Hardware security keys add strong protection on the web, iPhone, and iPad.' },
+    ];
+
+    body.innerHTML = `
+      <div class="twostep-section-label">Two-step verification</div>
+      <div class="twostep-section-desc">Add an extra layer of protection to your account with 2-Step Verification at login, account recovery, and high-value transactions. You can only enable one of the following options at a time.</div>
+      <div class="option-cards">
+        ${opts.map(o => `
+          <div class="opt-card" id="opt-${o.id}" onclick="select2FA('${o.id}')">
+            <div class="opt-card-left">
+              <div class="opt-title">${o.title}</div>
+              <div class="opt-desc">${o.desc}</div>
+            </div>
+            <div class="radio-circle" id="radio-${o.id}"><div class="radio-dot"></div></div>
+          </div>`).join('')}
+      </div>`;
+  }
+}
+
+function toggleEnhanced() {
+  epEnabled = !epEnabled;
+  const card = document.getElementById('ep-toggle-card');
+  const pill = document.getElementById('ep-pill');
+  card.classList.toggle('selected', epEnabled);
+  pill.textContent = epEnabled ? 'On' : 'Off';
+  pill.classList.toggle('on', epEnabled);
+  document.getElementById('modal-2fa-save').disabled = !epEnabled;
+}
+
+function select2FA(id) {
+  selected2FA = id;
+  document.querySelectorAll('.opt-card').forEach(el => el.classList.remove('selected'));
+  document.querySelectorAll('.radio-circle').forEach(el => el.classList.remove('checked'));
+  document.getElementById('opt-' + id).classList.add('selected');
+  document.getElementById('radio-' + id).classList.add('checked');
+  document.getElementById('modal-2fa-save').disabled = false;
+}
+
+function save2FA() {
+  const btn = document.getElementById('modal-2fa-save');
+  btn.textContent = '✓ Saved';
+  btn.classList.add('success-state');
+  btn.disabled = true;
+  setTimeout(() => {
+    closeModal('modal-2fa');
+    twoFaDone = true;
+    btn.textContent = requiresEnhanced() ? 'Enable' : 'Save';
+    btn.classList.remove('success-state');
+    btn.disabled = true;
+    renderSetupSteps();
+  }, 800);
+}
+
+// ── TAX FORM ──────────────────────────────────────────────────────
+function formatSSN(input) {
+  let v = input.value.replace(/\D/g, '').substring(0, 9);
+  if (v.length >= 6) v = v.slice(0,3) + '-' + v.slice(3,5) + '-' + v.slice(5);
+  else if (v.length >= 4) v = v.slice(0,3) + '-' + v.slice(3);
+  input.value = v;
+  updateTaxSubmit();
+}
+
+function updateTaxSubmit() {
+  const fname   = document.getElementById('tax-fname').value.trim();
+  const lname   = document.getElementById('tax-lname').value.trim();
+  const ssn     = document.getElementById('tax-ssn').value.trim();
+  const taxCls  = document.getElementById('tax-class').value;
+  const addr    = document.getElementById('tax-addr').value.trim();
+  const city    = document.getElementById('tax-city').value.trim();
+  const cert    = document.getElementById('tax-cert').checked;
+  const ssnFull = /^\d{3}-\d{2}-\d{4}$/.test(ssn);
+  document.getElementById('tax-submit-btn').disabled =
+    !(fname && lname && ssnFull && taxCls && addr && city && cert);
+}
+
+// hook up all tax inputs
+window.addEventListener('DOMContentLoaded', () => {
+  ['tax-fname','tax-lname','tax-class','tax-addr','tax-city','tax-state'].forEach(id => {
+    document.getElementById(id).addEventListener('input', updateTaxSubmit);
+  });
+});
+
+function submitTax() {
+  const btn = document.getElementById('tax-submit-btn');
+  btn.textContent = 'Submitting…';
+  btn.disabled = true;
+  setTimeout(() => {
+    closeModal('modal-tax');
+    taxDone = true;
+    btn.textContent = 'Submit';
+    goTo('wallet-active');
+  }, 900);
+}
+</script>
+</body>
+</html>
