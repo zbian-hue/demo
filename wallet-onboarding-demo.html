@@ -486,6 +486,7 @@ body {
     <button class="dpill active" id="pill-low"    onclick="setProfile('low-robux')">Low Robux</button>
     <button class="dpill"        id="pill-high"   onclick="setProfile('high-robux')">High Robux (100k+)</button>
     <button class="dpill"        id="pill-2fa"    onclick="setProfile('2fa-done')">2FA already set up</button>
+    <button class="dpill"        id="pill-tax"    onclick="setProfile('tax-done')">Tax already filled out</button>
   </div>
 </div>
 
@@ -796,7 +797,7 @@ body {
 <script>
 // ── STATE ─────────────────────────────────────────────────────────
 let setupMode    = false;
-let userProfile  = 'low-robux'; // 'low-robux' | 'high-robux' | '2fa-done'
+let userProfile  = 'low-robux'; // 'low-robux' | 'high-robux' | '2fa-done' | 'tax-done'
 let twoFaDone    = false;
 let taxDone      = false;
 let selected2FA  = null; // option id
@@ -805,6 +806,7 @@ let epEnabled    = false; // enhanced protection toggle
 // ── HELPERS ───────────────────────────────────────────────────────
 function needs2FA()        { return setupMode && userProfile !== '2fa-done'; }
 function requiresEnhanced(){ return userProfile === 'high-robux'; }
+function taxAlreadyDone()  { return userProfile === 'tax-done'; }
 
 function stepsRemaining() {
   let n = 0;
@@ -853,13 +855,13 @@ function onStateToggle(checked) {
 
 function setProfile(p) {
   userProfile = p;
-  twoFaDone = false;
-  taxDone   = false;
+  twoFaDone   = false;
+  taxDone     = p === 'tax-done'; // pre-filled for this profile
   selected2FA = null;
   epEnabled   = false;
 
   document.querySelectorAll('[id^="pill-"]').forEach(el => el.classList.remove('active'));
-  const map = { 'low-robux': 'pill-low', 'high-robux': 'pill-high', '2fa-done': 'pill-2fa' };
+  const map = { 'low-robux': 'pill-low', 'high-robux': 'pill-high', '2fa-done': 'pill-2fa', 'tax-done': 'pill-tax' };
   document.getElementById(map[p]).classList.add('active');
 
   goTo('confirm-setup');
