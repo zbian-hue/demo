@@ -963,16 +963,18 @@ function renderSetupSteps() {
     });
   }
 
-  // Tax form step
-  html += stepCardHTML({
-    num:     stepNum++,
-    done:    taxDone,
-    badge:   null,
-    title:   'Complete your tax form',
-    desc:    'US creators must submit a W-9 before they can earn on the platform.',
-    action:  'Complete tax form',
-    onclick: "openModal('modal-tax')",
-  });
+  // Tax form step — skip entirely if already done (same pattern as 2FA)
+  if (!taxDone) {
+    html += stepCardHTML({
+      num:     stepNum++,
+      done:    false,
+      badge:   null,
+      title:   'Complete your tax form',
+      desc:    'US creators must submit a W-9 before they can earn on the platform.',
+      action:  'Complete tax form',
+      onclick: "openModal('modal-tax')",
+    });
+  }
 
   list.innerHTML = html;
 }
