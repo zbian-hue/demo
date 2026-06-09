@@ -225,47 +225,62 @@ body {
 }
 
 /* Wallet overview screen */
-.overview-screen { padding: 24px 26px; overflow-y: auto; }
-.overview-head { font-size: 22px; font-weight: 700; color: #fff; margin-bottom: 18px; }
-.cards-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 22px; }
-.ov-card { padding: 18px 18px 16px; border: 1px solid rgba(255,255,255,0.07); border-radius: 9px; background: #1a1a1a; }
-.ov-label { font-size: 12px; color: rgba(255,255,255,0.4); margin-bottom: 8px; }
-.ov-value {
-  font-size: 26px; font-weight: 700; color: #fff;
-  margin-bottom: 14px; display: flex; align-items: center; gap: 7px; line-height: 1;
+.overview-screen { padding: 22px 24px; overflow-y: auto; flex: 1; }
+.overview-head { font-size: 22px; font-weight: 700; color: #fff; margin-bottom: 16px; }
+
+/* 2-col balance cards */
+.balance-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
+.bal-card { padding: 20px 20px 18px; border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; background: #1a1a1a; }
+.bal-label { font-size: 12px; color: rgba(255,255,255,0.42); margin-bottom: 8px; }
+.bal-value {
+  font-size: 28px; font-weight: 700; color: #fff;
+  line-height: 1; margin-bottom: 6px;
+  display: flex; align-items: center; gap: 8px;
 }
 .robux-ico {
-  width: 22px; height: 22px; border-radius: 50%;
+  width: 24px; height: 24px; border-radius: 50%;
   background: rgba(255,255,255,0.12); display: flex; align-items: center; justify-content: center;
-  font-size: 11px; font-weight: 800; color: rgba(255,255,255,0.7); flex-shrink: 0;
+  font-size: 12px; font-weight: 800; color: rgba(255,255,255,0.75); flex-shrink: 0;
 }
-.card-btn {
-  width: 100%; padding: 8px 0;
-  background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.08);
-  border-radius: 6px; color: rgba(255,255,255,0.55); font-size: 13px;
-  cursor: pointer; display: flex; align-items: center; justify-content: center;
-  gap: 6px; transition: background .15s;
+.bal-pending { font-size: 11.5px; color: rgba(255,255,255,0.32); margin-bottom: 16px; display: flex; align-items: center; gap: 4px; }
+.bal-payout-note { font-size: 11.5px; color: rgba(255,255,255,0.32); margin-bottom: 16px; display: flex; align-items: center; gap: 4px; line-height: 1.45; }
+.bal-btn {
+  width: 100%; padding: 9px 0;
+  border: none; border-radius: 6px; font-size: 14px; font-weight: 500;
+  cursor: pointer; transition: background .15s;
 }
-.card-btn:hover { background: rgba(255,255,255,0.1); }
-.card-btn.locked { opacity: .5; cursor: not-allowed; }
-.card-btn.locked:hover { background: rgba(255,255,255,0.07); }
-.card-btn.blue-full {
-  background: #4080ff; border-color: transparent; color: #fff;
-  font-weight: 500; font-size: 14px; padding: 9px 0;
-}
-.card-btn.blue-full:hover { background: #306ef0; }
-.checklist { display: flex; flex-direction: column; gap: 8px; margin-bottom: 14px; }
-.cl-item { display: flex; align-items: center; gap: 8px; font-size: 13px; color: rgba(255,255,255,0.7); }
-.info-note { display: flex; align-items: center; gap: 5px; font-size: 11.5px; color: rgba(255,255,255,0.32); margin-bottom: 12px; }
+.bal-btn.blue { background: #4080ff; color: #fff; }
+.bal-btn.blue:hover { background: #306ef0; }
+.bal-btn.dark { background: rgba(255,255,255,0.09); color: rgba(255,255,255,0.7); border: 1px solid rgba(255,255,255,0.08); }
+.bal-btn.dark:hover { background: rgba(255,255,255,0.13); }
+
+/* Analytics section */
 .section-row {
   display: flex; align-items: center; gap: 6px;
   font-size: 15px; font-weight: 600; color: #fff; margin-bottom: 12px; cursor: default;
 }
 .section-row svg { color: rgba(255,255,255,0.45); }
+
+/* Stat cards */
+.stat-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-bottom: 12px; }
+.stat-card { padding: 16px 18px; border: 1px solid rgba(255,255,255,0.07); border-radius: 9px; background: #1a1a1a; }
+.stat-label { font-size: 12px; color: rgba(255,255,255,0.4); margin-bottom: 8px; }
+.stat-value { font-size: 20px; font-weight: 700; color: rgba(255,255,255,0.35); }
+
+/* Chart card */
+.chart-card { border: 1px solid rgba(255,255,255,0.07); border-radius: 9px; background: #1a1a1a; margin-bottom: 20px; padding: 16px 18px; }
+.chart-card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+.chart-card-title { font-size: 13px; font-weight: 500; color: rgba(255,255,255,0.7); }
+.chart-dots { color: rgba(255,255,255,0.3); font-size: 16px; letter-spacing: 1px; cursor: default; }
+.chart-empty-wrap { padding: 24px 0 8px; display: flex; flex-direction: column; align-items: center; gap: 10px; }
+.chart-legend { display: flex; gap: 16px; margin-top: 8px; }
+.legend-item { display: flex; align-items: center; gap: 5px; font-size: 11px; color: rgba(255,255,255,0.35); }
+.legend-dot { width: 9px; height: 9px; border-radius: 2px; flex-shrink: 0; }
+
+/* Recent transactions */
 .empty-card { border: 1px solid rgba(255,255,255,0.07); border-radius: 9px; background: #1a1a1a; margin-bottom: 22px; }
-.empty-inner { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 36px 20px; gap: 14px; }
-.chart-icon { width: 72px; height: 72px; border: 1px solid rgba(255,255,255,0.12); border-radius: 10px; background: rgba(255,255,255,0.04); display: flex; align-items: center; justify-content: center; }
-.empty-cap { font-size: 13px; color: rgba(255,255,255,0.38); text-align: center; max-width: 340px; line-height: 1.5; }
+.empty-inner { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 30px 20px; gap: 10px; }
+.empty-cap { font-size: 13px; color: rgba(255,255,255,0.32); text-align: center; max-width: 340px; line-height: 1.5; }
 
 
 /* ═══════════════════════════════════════════════════════════════════
@@ -623,57 +638,105 @@ body {
       <div class="screen" id="screen-overview">
         <div class="overview-screen">
           <div class="overview-head">Overview</div>
-          <div class="cards-grid">
-            <div class="ov-card">
-              <div style="font-size:14px; font-weight:600; color:#fff; margin-bottom:14px">Complete account setting</div>
-              <div class="checklist">
-                <div class="cl-item">
-                  <svg width="17" height="17" viewBox="0 0 17 17" fill="none"><circle cx="8.5" cy="8.5" r="7.5" stroke="rgba(255,255,255,0.5)" stroke-width="1.4"/><path d="M5.5 8.5l2.5 2.5 4-5" stroke="rgba(255,255,255,0.7)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                  Set up 2FA
-                </div>
-                <div class="cl-item">
-                  <svg width="17" height="17" viewBox="0 0 17 17" fill="none"><circle cx="8.5" cy="8.5" r="7.5" stroke="rgba(255,255,255,0.5)" stroke-width="1.4"/><path d="M5.5 8.5l2.5 2.5 4-5" stroke="rgba(255,255,255,0.7)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                  Link an external bank account
-                </div>
-                <div class="cl-item">
-                  <svg width="17" height="17" viewBox="0 0 17 17" fill="none"><circle cx="8.5" cy="8.5" r="7.5" stroke="rgba(255,255,255,0.5)" stroke-width="1.4"/><path d="M5.5 8.5l2.5 2.5 4-5" stroke="rgba(255,255,255,0.7)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                  Complete tax documents
-                </div>
+
+          <!-- Balance cards -->
+          <div class="balance-grid">
+            <div class="bal-card">
+              <div class="bal-label">Available balance</div>
+              <div class="bal-value">$0.00</div>
+              <div class="bal-payout-note">
+                <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.3" style="flex-shrink:0"><circle cx="6.5" cy="6.5" r="5.5"/><path d="M6.5 5.5v3M6.5 4v.5" stroke-linecap="round"/></svg>
+                USD earnings from your experiences are paid out monthly and will appear here.
               </div>
-              <button class="card-btn blue-full">Start</button>
+              <button class="bal-btn blue">Transfer</button>
             </div>
-            <div class="ov-card">
-              <div class="ov-label">Available balance</div>
-              <div class="ov-value">$0.00</div>
-              <div class="info-note">
-                <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.3"><circle cx="6.5" cy="6.5" r="5.5"/><path d="M6.5 5.5v3M6.5 4v.5" stroke-linecap="round"/></svg>
-                Finish wallet set up to access full features
+            <div class="bal-card">
+              <div class="bal-label">Robux balance</div>
+              <div class="bal-value">
+                <div class="robux-ico">R</div>52,345
               </div>
-              <button class="card-btn locked">
-                <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.3"><rect x="2" y="5.5" width="9" height="6" rx="1"/><path d="M4.5 5.5V4a2 2 0 014 0v1.5" stroke-linecap="round"/></svg>
-                Transfer
-              </button>
-            </div>
-            <div class="ov-card">
-              <div class="ov-label">Robux balance</div>
-              <div class="ov-value"><div class="robux-ico">R</div>52,345</div>
-              <button class="card-btn">Buy Robux</button>
+              <div style="margin-bottom:16px"></div>
+              <button class="bal-btn dark">Buy Robux</button>
             </div>
           </div>
-          <div class="section-row">Analytics in last 7 days <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 2l5 5-5 5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+
+          <!-- Analytics -->
+          <div class="section-row">
+            Analytics in last 7 days
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 2l5 5-5 5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+
+          <!-- Stat cards -->
+          <div class="stat-grid">
+            <div class="stat-card">
+              <div class="stat-label">Total incoming</div>
+              <div class="stat-value">$0.00</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">Total outgoings</div>
+              <div class="stat-value">$0.00</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">Total net income</div>
+              <div class="stat-value">$0.00</div>
+            </div>
+          </div>
+
+          <!-- Chart card -->
+          <div class="chart-card">
+            <div class="chart-card-header">
+              <div class="chart-card-title">Total income &amp; outgoings</div>
+              <div class="chart-dots">···</div>
+            </div>
+            <!-- Ghost chart axes to show the structure, with empty-state message -->
+            <div style="position:relative">
+              <svg width="100%" height="110" viewBox="0 0 560 110" preserveAspectRatio="none" fill="none">
+                <!-- Y gridlines -->
+                <line x1="0" y1="10"  x2="560" y2="10"  stroke="rgba(255,255,255,0.05)" stroke-width="1"/>
+                <line x1="0" y1="35"  x2="560" y2="35"  stroke="rgba(255,255,255,0.05)" stroke-width="1"/>
+                <line x1="0" y1="60"  x2="560" y2="60"  stroke="rgba(255,255,255,0.05)" stroke-width="1"/>
+                <line x1="0" y1="85"  x2="560" y2="85"  stroke="rgba(255,255,255,0.05)" stroke-width="1"/>
+                <line x1="0" y1="108" x2="560" y2="108" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+              </svg>
+              <!-- Y labels -->
+              <div style="position:absolute;top:0;left:0;height:110px;display:flex;flex-direction:column;justify-content:space-between;padding:4px 0 4px">
+                <span style="font-size:10px;color:rgba(255,255,255,0.18)">$500</span>
+                <span style="font-size:10px;color:rgba(255,255,255,0.18)">$250</span>
+                <span style="font-size:10px;color:rgba(255,255,255,0.18)">$0</span>
+              </div>
+              <!-- X labels -->
+              <div style="display:flex;justify-content:space-around;padding:6px 0 0 24px">
+                <span style="font-size:10px;color:rgba(255,255,255,0.2)">Oct 1</span>
+                <span style="font-size:10px;color:rgba(255,255,255,0.2)">Oct 2</span>
+                <span style="font-size:10px;color:rgba(255,255,255,0.2)">Oct 3</span>
+                <span style="font-size:10px;color:rgba(255,255,255,0.2)">Oct 4</span>
+                <span style="font-size:10px;color:rgba(255,255,255,0.2)">Oct 5</span>
+                <span style="font-size:10px;color:rgba(255,255,255,0.2)">Oct 6</span>
+                <span style="font-size:10px;color:rgba(255,255,255,0.2)">Oct 7</span>
+              </div>
+              <!-- Centered empty state overlay -->
+              <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center">
+                <span style="font-size:12px;color:rgba(255,255,255,0.28);background:#1a1a1a;padding:4px 12px;border-radius:20px;">
+                  Charts will populate after your first payout cycle
+                </span>
+              </div>
+            </div>
+            <div class="chart-legend">
+              <div class="legend-item"><div class="legend-dot" style="background:#4080ff"></div>Incoming</div>
+              <div class="legend-item"><div class="legend-dot" style="background:#ef4444"></div>Outgoing</div>
+              <div class="legend-item"><div class="legend-dot" style="background:#f97316"></div>Net income</div>
+            </div>
+          </div>
+
+          <!-- Recent transactions -->
+          <div class="section-row">
+            Recent transactions
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 2l5 5-5 5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
           <div class="empty-card">
             <div class="empty-inner">
-              <div class="chart-icon">
-                <svg width="42" height="42" viewBox="0 0 42 42" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="1.4"><path d="M6 30l8-10 6 7 7-12 9 8" stroke-linecap="round" stroke-linejoin="round"/><circle cx="14" cy="20" r="1.8" fill="rgba(255,255,255,0.35)" stroke="none"/><circle cx="20" cy="27" r="1.8" fill="rgba(255,255,255,0.35)" stroke="none"/><circle cx="27" cy="15" r="1.8" fill="rgba(255,255,255,0.35)" stroke="none"/><circle cx="36" cy="23" r="1.8" fill="rgba(255,255,255,0.35)" stroke="none"/></svg>
-              </div>
-              <div class="empty-cap">Once you start earning or spending, your charts will appear here.</div>
-            </div>
-          </div>
-          <div class="section-row">Recent transactions <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 2l5 5-5 5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-          <div class="empty-card">
-            <div class="empty-inner" style="padding:28px 20px">
-              <div class="chart-icon"><svg width="38" height="38" viewBox="0 0 38 38" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="1.4"><rect x="4" y="10" width="30" height="18" rx="3"/><path d="M10 19h18M10 24h12" stroke-linecap="round"/></svg></div>
-              <div class="empty-cap" style="font-size:12px">No transactions yet.</div>
+              <svg width="36" height="36" viewBox="0 0 36 36" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="1.4"><rect x="3" y="9" width="30" height="18" rx="3"/><path d="M9 18h18M9 23h12" stroke-linecap="round"/></svg>
+              <div class="empty-cap">Your transactions will appear here once you start earning or spending.</div>
             </div>
           </div>
         </div>
